@@ -75,7 +75,6 @@
 - 🔄 Data reset option
 
 ---
-
 ## 🛠️ Tech Stack
 
 | Technology | Purpose |
