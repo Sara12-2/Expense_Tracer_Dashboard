@@ -60,7 +60,59 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* TOAST */
+/* Animations */
+@keyframes slideIn {
+  from { transform: translateX(80px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Loading State */
+.loading {
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+/* Toast */
 .toast-container {
   position: fixed; bottom: 24px; right: 24px; z-index: 9999;
   display: flex; flex-direction: column; gap: 10px;
@@ -74,7 +126,7 @@ body {
 .toast.success { border-left: 4px solid var(--green); }
 .toast.error { border-left: 4px solid var(--red); }
 .toast.info { border-left: 4px solid var(--accent); }
-@keyframes slideIn { from { transform: translateX(80px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.warning { border-left: 4px solid var(--amber); }
 
 /* LAYOUT */
 .app { display: flex; min-height: 100vh; }
@@ -110,13 +162,31 @@ body {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 14px; border-radius: var(--radius-sm);
   color: var(--sidebar-text); font-weight: 500; font-size: 14px;
-  transition: all 0.2s; cursor: pointer; margin-bottom: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer; margin-bottom: 2px;
+  position: relative;
+  overflow: hidden;
 }
-.nav-item i { width: 20px; font-size: 1rem; text-align: center; }
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+.nav-item:hover::before {
+  left: 100%;
+}
+.nav-item i { width: 20px; font-size: 1rem; text-align: center; transition: transform 0.3s; }
+.nav-item:hover i { transform: translateX(3px); }
 .nav-item:hover { background: rgba(59,130,246,0.12); color: #a8c8f8; }
 .nav-item.active {
   background: linear-gradient(95deg, rgba(37,99,235,0.25), rgba(14,165,233,0.12));
   color: #fff;
+  animation: fadeIn 0.3s ease;
 }
 .nav-item.active i { color: #60a5fa; }
 
@@ -128,12 +198,21 @@ body {
   display: flex; align-items: center; gap: 12px;
   background: rgba(255,255,255,0.05); border-radius: var(--radius-sm);
   padding: 10px 14px; cursor: pointer;
+  transition: all 0.3s;
+}
+.user-pill:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateX(3px);
 }
 .avatar {
   width: 36px; height: 36px; border-radius: 50%;
   background: linear-gradient(135deg, #2563eb, #06b6d4);
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; color: white; font-size: 14px; flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.user-pill:hover .avatar {
+  transform: scale(1.05);
 }
 .user-info .name { font-size: 13px; color: #c0d4ee; font-weight: 600; }
 .user-info .role { font-size: 11px; color: var(--sidebar-text); }
@@ -156,36 +235,47 @@ body {
 .search {
   display: flex; align-items: center; gap: 10px;
   background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 40px; padding: 9px 18px; width: 240px; transition: all 0.2s;
+  border-radius: 40px; padding: 9px 18px; width: 240px; transition: all 0.3s;
 }
-.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); transform: scale(1.02); }
 .search input { border: none; outline: none; background: transparent; font-size: 13px; color: var(--text); width: 100%; }
 .search input::placeholder { color: var(--text3); }
-.search i { color: var(--text3); font-size: 13px; }
+.search i { color: var(--text3); font-size: 13px; transition: color 0.3s; }
+.search:focus-within i { color: var(--accent); }
 .date-pill {
   background: var(--surface2); border: 1px solid var(--border);
   padding: 8px 16px; border-radius: 40px; font-size: 13px;
   font-weight: 600; color: var(--text2); white-space: nowrap;
+  transition: all 0.3s;
+}
+.date-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .currency-select {
   background: var(--surface2); border: 1px solid var(--border);
   color: var(--text2); padding: 8px 14px; border-radius: 40px;
   font-size: 13px; font-weight: 600; cursor: pointer; outline: none;
-  font-family: inherit;
+  font-family: inherit; transition: all 0.3s;
+}
+.currency-select:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
 }
 .dark-btn {
   background: var(--surface2); border: 1px solid var(--border);
   color: var(--text2); padding: 9px 18px; border-radius: 40px;
   font-size: 13px; font-weight: 600; cursor: pointer; display: flex;
-  align-items: center; gap: 8px; transition: all 0.2s; font-family: inherit;
+  align-items: center; gap: 8px; transition: all 0.3s; font-family: inherit;
 }
-.dark-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+.dark-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-2px); }
+.dark-btn:active { transform: scale(0.98); }
 
 /* CONTENT */
-.content { padding: 28px; flex: 1; overflow-y: auto; }
+.content { padding: 28px; flex: 1; overflow-y: auto; animation: fadeIn 0.4s ease; }
 
 /* PAGE HEADER */
-.page-header { margin-bottom: 24px; }
+.page-header { margin-bottom: 24px; animation: slideUp 0.4s ease; }
 .page-header h2 {
   font-family: 'Outfit', sans-serif; font-size: 1.45rem;
   font-weight: 700; color: var(--text);
@@ -196,14 +286,20 @@ body {
 .card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 22px;
-  box-shadow: var(--card-shadow); transition: background 0.3s, border-color 0.3s;
+  box-shadow: var(--card-shadow); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.5s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
 }
 .card-title {
   font-size: 13px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.8px; color: var(--text2); margin-bottom: 16px;
   display: flex; align-items: center; gap: 8px;
 }
-.card-title i { color: var(--accent); }
+.card-title i { color: var(--accent); transition: transform 0.3s; }
+.card:hover .card-title i { transform: rotate(360deg); }
 
 /* KPI GRID */
 .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(180px,1fr)); gap: 18px; margin-bottom: 24px; }
@@ -211,16 +307,18 @@ body {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 20px 22px 20px 20px;
   box-shadow: var(--card-shadow); cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative; overflow: visible; min-width: 0;
+  animation: fadeIn 0.4s ease;
 }
 .kpi-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
-  opacity: 0; transition: opacity 0.2s;
+  opacity: 0; transition: opacity 0.3s;
 }
-.kpi-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+.kpi-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
 .kpi-card:hover::before { opacity: 1; }
+.kpi-card:active { transform: translateY(-2px) scale(0.98); }
 .kpi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); }
 .kpi-value {
   font-family: 'Outfit', sans-serif; font-size: 1.5rem;
@@ -234,7 +332,9 @@ body {
   width: 38px; height: 38px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px;
+  transition: transform 0.3s;
 }
+.kpi-card:hover .kpi-icon { transform: rotate(15deg) scale(1.1); }
 
 /* GRID LAYOUTS */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
@@ -249,14 +349,15 @@ thead th {
   font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
   color: var(--text3); border-bottom: 1px solid var(--border);
 }
-tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+tbody tr { border-bottom: 1px solid var(--border); transition: all 0.3s; }
 tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--surface2); }
+tbody tr:hover { background: var(--surface2); transform: translateX(5px); }
 tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-align: middle; }
 
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700;
+  transition: all 0.3s;
 }
 .badge-income { background: rgba(16,185,129,0.12); color: var(--green); }
 .badge-expense { background: rgba(239,68,68,0.1); color: var(--red); }
@@ -264,10 +365,34 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
 .action-btn {
   background: none; border: 1px solid var(--border); border-radius: 8px;
   padding: 5px 10px; cursor: pointer; font-size: 12px; color: var(--text2);
-  transition: all 0.15s; font-family: inherit;
+  transition: all 0.3s; font-family: inherit;
 }
-.action-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+.action-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-2px); }
+.action-btn:active { transform: scale(0.95); }
 .action-btn.del:hover { background: var(--red); border-color: var(--red); color: white; }
+
+/* Filter Chips */
+.filter-chip {
+  padding: 8px 16px;
+  border-radius: 40px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 13px;
+  font-weight: 600;
+}
+.filter-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.filter-chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
 
 /* FORMS */
 .form-group { margin-bottom: 14px; }
@@ -276,31 +401,49 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
   width: 100%; padding: 11px 14px; border-radius: var(--radius-sm);
   border: 1px solid var(--border); background: var(--surface2);
   color: var(--text); font-family: inherit; font-size: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+  transition: all 0.3s; outline: none;
 }
 .form-input:focus, .form-select:focus {
   border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  transform: scale(1.01);
 }
-.form-input.error { border-color: var(--red); }
-.form-input::placeholder { color: var(--text3); }
+.form-input.error { border-color: var(--red); animation: pulse 0.5s; }
 
 .btn {
   width: 100%; padding: 13px; border-radius: 40px; border: none;
   font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px;
-  cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+.btn:active::before {
+  width: 300px;
+  height: 300px;
 }
 .btn-primary {
   background: linear-gradient(95deg, #2563eb, #0ea5e9); color: white;
 }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,0.35); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.35); }
 .btn-primary:active { transform: scale(0.98); }
 
 /* PROGRESS */
 .progress-bar { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; margin: 6px 0 4px; }
-.progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+.progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 
 /* BUDGET LIST */
-.budget-item { margin-bottom: 18px; }
+.budget-item { margin-bottom: 18px; animation: fadeIn 0.3s ease; }
 .budget-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .budget-name { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .budget-amounts { font-size: 12px; color: var(--text3); }
@@ -311,10 +454,13 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
 .cat-card {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 16px; text-align: center;
-  cursor: pointer; transition: all 0.2s;
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.4s ease;
 }
-.cat-card:hover { transform: translateY(-3px); background: var(--surface); border-color: var(--accent); }
-.cat-icon { font-size: 1.6rem; margin-bottom: 8px; line-height: 1; }
+.cat-card:hover { transform: translateY(-5px) scale(1.05); background: var(--surface); border-color: var(--accent); }
+.cat-card:active { transform: translateY(-2px) scale(0.98); }
+.cat-icon { font-size: 1.6rem; margin-bottom: 8px; line-height: 1; transition: transform 0.3s; }
+.cat-card:hover .cat-icon { transform: scale(1.2); }
 .cat-name { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
 .cat-amount { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 4px; }
 .cat-pct { font-size: 11px; color: var(--text3); }
@@ -324,10 +470,13 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
 .insight-card {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 20px; text-align: center;
-  transition: all 0.2s; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+  animation: fadeIn 0.4s ease;
 }
-.insight-card:hover { transform: translateY(-3px); }
-.insight-icon { font-size: 1.6rem; margin-bottom: 10px; }
+.insight-card:hover { transform: translateY(-5px) scale(1.03); background: var(--surface); border-color: var(--accent); }
+.insight-card:active { transform: translateY(-2px); }
+.insight-icon { font-size: 1.6rem; margin-bottom: 10px; transition: transform 0.3s; }
+.insight-card:hover .insight-icon { transform: scale(1.2); }
 .insight-label { font-size: 12px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
 .insight-value { font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 700; color: var(--text); margin: 4px 0; }
 .insight-sub { font-size: 12px; color: var(--text3); }
@@ -337,12 +486,21 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 16px 20px;
   display: flex; align-items: center; gap: 16px;
+  transition: all 0.3s;
+  animation: fadeIn 0.4s ease;
+}
+.analytics-stat:hover {
+  transform: translateY(-3px);
+  background: var(--surface);
+  border-color: var(--accent);
 }
 .analytics-stat-icon {
   width: 44px; height: 44px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.2rem; flex-shrink: 0;
+  transition: transform 0.3s;
 }
+.analytics-stat:hover .analytics-stat-icon { transform: rotate(10deg) scale(1.1); }
 .analytics-stat-label { font-size: 12px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
 .analytics-stat-value { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); margin-top: 2px; }
 
@@ -352,27 +510,37 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
 .settings-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 0; border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.settings-row:hover {
+  transform: translateX(5px);
+  background: var(--surface2);
+  padding-left: 10px;
+  border-radius: 8px;
 }
 .settings-row:last-child { border-bottom: none; }
 .settings-row-label { font-size: 14px; font-weight: 500; color: var(--text); }
 .settings-row-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
 .toggle {
   width: 44px; height: 24px; border-radius: 99px; background: var(--border);
-  cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0;
+  cursor: pointer; position: relative; transition: all 0.3s; flex-shrink: 0;
 }
 .toggle.on { background: var(--accent); }
 .toggle::after {
   content: ''; position: absolute; top: 3px; left: 3px;
   width: 18px; height: 18px; border-radius: 50%; background: white;
-  transition: transform 0.2s;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .toggle.on::after { transform: translateX(20px); }
+.toggle:hover { transform: scale(1.05); }
+.toggle:active { transform: scale(0.95); }
 
 /* EMPTY STATE */
 .empty-state {
   text-align: center; padding: 48px 20px; color: var(--text3);
 }
-.empty-state i { font-size: 3rem; margin-bottom: 12px; display: block; }
+.empty-state i { font-size: 3rem; margin-bottom: 12px; display: block; transition: transform 0.3s; }
+.empty-state:hover i { transform: scale(1.1); }
 .empty-state p { font-size: 14px; }
 
 /* MODAL */
@@ -382,32 +550,34 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
   z-index: 9000; backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease;
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 28px; width: 440px;
   max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-  animation: slideUp 0.25s ease;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-header h3 { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
-.modal-close { background: none; border: none; color: var(--text3); font-size: 1.2rem; cursor: pointer; padding: 4px; }
-.modal-close:hover { color: var(--text); }
+.modal-close { background: none; border: none; color: var(--text3); font-size: 1.2rem; cursor: pointer; padding: 4px; transition: all 0.3s; }
+.modal-close:hover { color: var(--text); transform: rotate(90deg); }
 
 /* REPORTS */
 .report-card {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 20px;
   display: flex; align-items: flex-start; gap: 16px;
-  transition: all 0.2s; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+  animation: fadeIn 0.4s ease;
 }
-.report-card:hover { border-color: var(--accent); background: var(--surface); }
+.report-card:hover { transform: translateY(-5px) translateX(5px); border-color: var(--accent); background: var(--surface); }
+.report-card:active { transform: translateY(-2px); }
 .report-icon {
   width: 48px; height: 48px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.3rem; flex-shrink: 0;
+  transition: transform 0.3s;
 }
+.report-card:hover .report-icon { transform: rotate(10deg) scale(1.1); }
 .report-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
 .report-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
 .report-meta { font-size: 11px; color: var(--accent); margin-top: 6px; font-weight: 600; }
@@ -420,8 +590,8 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
   flex-wrap: wrap; gap: 12px;
 }
 .footer-links { display: flex; gap: 20px; }
-.footer-links i { font-size: 1rem; cursor: pointer; transition: 0.15s; }
-.footer-links i:hover { color: var(--accent); transform: translateY(-2px); }
+.footer-links i { font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+.footer-links i:hover { color: var(--accent); transform: translateY(-3px) scale(1.2); }
 
 /* RESPONSIVE */
 @media(max-width: 1100px) {
@@ -544,7 +714,7 @@ tbody td { padding: 13px 12px; font-size: 14px; color: var(--text); vertical-ali
 // ============================================================
 // STATE & STORAGE
 // ============================================================
-const STORAGE_KEYS = { txns: 'aurum_transactions', settings: 'aurum_settings' };
+const STORAGE_KEYS = { txns: 'aurum_transactions', settings: 'aurum_settings', categories: 'aurum_categories' };
 
 const DEFAULT_TXNS = [
   { id: uid(), title: 'Salary March', amount: 6800, category: 'Income', date: '2025-03-01', type: 'income' },
@@ -587,6 +757,8 @@ let activeCharts = {};
 let currentNav = 'dashboard';
 let darkMode = false;
 let searchTerm = '';
+let currentTransactionFilter = 'all';
+let customCategories = [];
 
 function load() {
   const saved = localStorage.getItem(STORAGE_KEYS.txns);
@@ -594,6 +766,7 @@ function load() {
   const settings = JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) || '{}');
   darkMode = settings.dark || false;
   currency = settings.currency || '$';
+  customCategories = JSON.parse(localStorage.getItem(STORAGE_KEYS.categories) || '[]');
   if (darkMode) document.body.classList.add('dark');
   document.getElementById('currencySelect').value = currency;
   updateDarkBtn();
@@ -602,6 +775,7 @@ function load() {
 function save() {
   localStorage.setItem(STORAGE_KEYS.txns, JSON.stringify(transactions));
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify({ dark: darkMode, currency }));
+  localStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(customCategories));
 }
 
 // ============================================================
@@ -609,16 +783,46 @@ function save() {
 // ============================================================
 function fmt(n) { return currency + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function pct(a, b) { return b === 0 ? '0' : ((a/b)*100).toFixed(1); }
+
+function animateNumber(element, start, end, duration = 1000) {
+  const startTime = performance.now();
+  const updateNumber = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+    const current = start + (end - start) * easeOutCubic;
+    if (element) element.textContent = fmt(current);
+    if (progress < 1) requestAnimationFrame(updateNumber);
+  };
+  requestAnimationFrame(updateNumber);
+}
+
 function getKPIs() {
   let income = 0, expense = 0;
   transactions.forEach(t => t.type === 'income' ? income += t.amount : expense += t.amount);
   return { income, expense, balance: income - expense, savings: income - expense };
 }
+
 function getCatSpend() {
   const map = {};
   transactions.filter(t => t.type === 'expense').forEach(t => map[t.category] = (map[t.category]||0) + t.amount);
   return map;
 }
+
+function checkBudgetAlerts() {
+  const catSpend = getCatSpend();
+  BUDGETS.forEach(budget => {
+    const spent = catSpend[budget.category] || 0;
+    const percentage = (spent / budget.limit) * 100;
+    
+    if (percentage >= 90 && percentage < 100) {
+      toast(`⚠️ ${budget.category} budget at ${percentage.toFixed(0)}%!`, 'warning');
+    } else if (percentage >= 100) {
+      toast(`❗ ${budget.category} budget exceeded!`, 'error');
+    }
+  });
+}
+
 function isDark() { return document.body.classList.contains('dark'); }
 function chartColors() {
   return { text: isDark() ? '#7ea8d8' : '#475569', grid: isDark() ? '#1e2d45' : '#e4eaf5', bg: isDark() ? '#0f1728' : '#ffffff' };
@@ -631,10 +835,30 @@ function destroyCharts() {
 function toast(msg, type='info') {
   const c = document.getElementById('toastContainer');
   const t = document.createElement('div');
-  t.className = `toast ${type}`; t.textContent = msg;
+  t.className = `toast ${type}`; 
+  t.textContent = msg;
   c.appendChild(t);
-  setTimeout(() => t.remove(), 3200);
+  setTimeout(() => {
+    t.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => t.remove(), 300);
+  }, 3200);
 }
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+    toast('Search activated', 'info');
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+    e.preventDefault();
+    showAddModal();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('editModal').style.display = 'none';
+  }
+});
 
 // ============================================================
 // NAVIGATION
@@ -647,6 +871,19 @@ document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.add('active');
     currentNav = el.dataset.nav;
     document.getElementById('pageTitle').textContent = PAGE_TITLES[currentNav];
+    
+    // Add ripple effect
+    const ripple = document.createElement('span');
+    ripple.style.position = 'absolute';
+    ripple.style.borderRadius = '50%';
+    ripple.style.backgroundColor = 'rgba(255,255,255,0.3';
+    ripple.style.pointerEvents = 'none';
+    ripple.style.transform = 'scale(0)';
+    ripple.style.animation = 'ripple 0.6s linear';
+    el.style.position = 'relative';
+    el.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+    
     destroyCharts();
     render();
   });
@@ -671,10 +908,10 @@ function renderDashboard() {
     </div>
 
     <div class="kpi-grid">
-      ${kpiCard('Total Balance', fmt(kpis.balance), 'fa-wallet', 'rgba(37,99,235,0.12)', '#2563eb', '↑ 18% vs last month', '#10b981')}
-      ${kpiCard('Monthly Income', fmt(kpis.income), 'fa-arrow-up', 'rgba(16,185,129,0.12)', '#10b981', '+15% growth', '#10b981')}
-      ${kpiCard('Total Expenses', fmt(kpis.expense), 'fa-arrow-down', 'rgba(239,68,68,0.1)', '#ef4444', '↓ 8% from last', '#ef4444')}
-      ${kpiCard('Net Savings', fmt(kpis.savings), 'fa-piggy-bank', 'rgba(139,92,246,0.12)', '#8b5cf6', pct(kpis.savings,kpis.income)+'% savings rate', '#8b5cf6')}
+      ${kpiCard('Total Balance', fmt(kpis.balance), 'fa-wallet', 'rgba(37,99,235,0.12)', '#2563eb', '↑ 18% vs last month', '#10b981', kpis.balance)}
+      ${kpiCard('Monthly Income', fmt(kpis.income), 'fa-arrow-up', 'rgba(16,185,129,0.12)', '#10b981', '+15% growth', '#10b981', kpis.income)}
+      ${kpiCard('Total Expenses', fmt(kpis.expense), 'fa-arrow-down', 'rgba(239,68,68,0.1)', '#ef4444', '↓ 8% from last', '#ef4444', kpis.expense)}
+      ${kpiCard('Net Savings', fmt(kpis.savings), 'fa-piggy-bank', 'rgba(139,92,246,0.12)', '#8b5cf6', pct(kpis.savings,kpis.income)+'% savings rate', '#8b5cf6', kpis.savings)}
     </div>
 
     <div class="grid-2">
@@ -726,11 +963,15 @@ function renderDashboard() {
   `;
 
   buildInsights(kpis, catSpend);
-  setTimeout(() => { buildDonut(kpis); buildPie(catSpend); setupQuickAdd(); }, 50);
+  setTimeout(() => { 
+    if (document.getElementById('chartDonut')) buildDonut(kpis); 
+    if (document.getElementById('chartPie')) buildPie(catSpend); 
+    setupQuickAdd(); 
+  }, 50);
 }
 
-function kpiCard(label, value, icon, iconBg, iconColor, meta, metaColor) {
-  return `<div class="kpi-card">
+function kpiCard(label, value, icon, iconBg, iconColor, meta, metaColor, rawValue) {
+  return `<div class="kpi-card" data-value="${rawValue}">
     <div class="kpi-icon" style="background:${iconBg};"><i class="fa-solid ${icon}" style="color:${iconColor};"></i></div>
     <div class="kpi-label">${label}</div>
     <div class="kpi-value">${value}</div>
@@ -753,9 +994,9 @@ function buildInsights(kpis, catSpend) {
 }
 
 function buildDonut(kpis) {
-  const cc = chartColors();
   const ctx = document.getElementById('chartDonut');
-  if (!ctx) return;
+  if (!ctx || !ctx.getContext) return;
+  const cc = chartColors();
   activeCharts.donut = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -770,11 +1011,11 @@ function buildDonut(kpis) {
 }
 
 function buildPie(catSpend) {
+  const ctx = document.getElementById('chartPie');
+  if (!ctx || !ctx.getContext) return;
   const cc = chartColors();
   const keys = Object.keys(catSpend);
   if (!keys.length) return;
-  const ctx = document.getElementById('chartPie');
-  if (!ctx) return;
   activeCharts.pie = new Chart(ctx, {
     type: 'pie',
     data: {
@@ -792,8 +1033,20 @@ function buildPie(catSpend) {
 // TRANSACTIONS PAGE
 // ============================================================
 function renderTransactions() {
-  const q = searchTerm.toLowerCase();
-  const filtered = q ? transactions.filter(t => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)) : transactions;
+  let filtered = transactions;
+  
+  // Apply search filter
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q));
+  }
+  
+  // Apply type filter
+  if (currentTransactionFilter === 'income') {
+    filtered = filtered.filter(t => t.type === 'income');
+  } else if (currentTransactionFilter === 'expense') {
+    filtered = filtered.filter(t => t.type === 'expense');
+  }
 
   document.getElementById('content').innerHTML = `
     <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
@@ -807,11 +1060,26 @@ function renderTransactions() {
       ${miniStat('Net Balance', fmt(getKPIs().balance), '#2563eb')}
     </div>
 
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+      <button class="filter-chip ${currentTransactionFilter === 'all' ? 'active' : ''}" data-filter="all">All</button>
+      <button class="filter-chip ${currentTransactionFilter === 'income' ? 'active' : ''}" data-filter="income">Income Only</button>
+      <button class="filter-chip ${currentTransactionFilter === 'expense' ? 'active' : ''}" data-filter="expense">Expenses Only</button>
+    </div>
+
     <div class="card">
       <div class="card-title"><i class="fa-solid fa-list"></i> All Transactions</div>
       ${filtered.length ? txnTable(filtered, true) : `<div class="empty-state"><i class="fa-solid fa-search"></i><p>No transactions match your search</p></div>`}
     </div>
   `;
+  
+  // Add filter chip event listeners
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      currentTransactionFilter = chip.dataset.filter;
+      renderTransactions();
+    });
+  });
+  
   bindTxnActions();
   document.getElementById('addTxnBtn').addEventListener('click', () => showAddModal());
 }
@@ -838,7 +1106,7 @@ function txnTable(txns, showActions) {
           <td style="color:var(--text2);">${t.date}</td>
           <td><span class="badge badge-${t.type}">${t.type}</span></td>
           ${showActions ? `<td style="display:flex;gap:6px;"><button class="action-btn edit-btn" data-id="${t.id}"><i class="fa-solid fa-edit"></i></button><button class="action-btn del del-btn" data-id="${t.id}"><i class="fa-solid fa-trash"></i></button></td>` : ''}
-        </tr>`).join('')}
+         </tr>`).join('')}
       </tbody>
     </table>
   </div>`;
@@ -854,6 +1122,7 @@ function deleteTransaction(id) {
   transactions = transactions.filter(t => t.id !== id);
   save();
   toast('Transaction deleted', 'error');
+  checkBudgetAlerts();
   render();
 }
 
@@ -867,30 +1136,39 @@ function openEditModal(id) {
   document.getElementById('editDate').value = t.date;
   document.getElementById('editType').value = t.type;
   document.getElementById('editModal').style.display = 'flex';
+  document.querySelector('.modal-header h3').innerHTML = '<i class="fa-solid fa-edit"></i> Edit Transaction';
+  document.getElementById('saveEditBtn').textContent = 'Save Changes';
+  
+  // Remove existing listener and add new one
+  const saveBtn = document.getElementById('saveEditBtn');
+  const newSaveBtn = saveBtn.cloneNode(true);
+  saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+  
+  newSaveBtn.addEventListener('click', function saveHandler() {
+    const title = document.getElementById('editTitle').value.trim();
+    const amount = parseFloat(document.getElementById('editAmount').value);
+    const category = document.getElementById('editCategory').value;
+    const date = document.getElementById('editDate').value;
+    const type = document.getElementById('editType').value;
+    if (!title || isNaN(amount) || amount <= 0 || !date) { toast('Please fill all fields correctly', 'error'); return; }
+    const idx = transactions.findIndex(t => t.id === editingId);
+    if (idx > -1) {
+      transactions[idx] = { ...transactions[idx], title, amount, category, date, type };
+      save();
+      document.getElementById('editModal').style.display = 'none';
+      toast('Transaction updated ✓', 'success');
+      checkBudgetAlerts();
+      render();
+    }
+    newSaveBtn.removeEventListener('click', saveHandler);
+  });
 }
 
 document.getElementById('modalClose').addEventListener('click', () => document.getElementById('editModal').style.display = 'none');
 document.getElementById('editModal').addEventListener('click', e => { if (e.target === document.getElementById('editModal')) document.getElementById('editModal').style.display = 'none'; });
 
-document.getElementById('saveEditBtn').addEventListener('click', () => {
-  const title = document.getElementById('editTitle').value.trim();
-  const amount = parseFloat(document.getElementById('editAmount').value);
-  const category = document.getElementById('editCategory').value;
-  const date = document.getElementById('editDate').value;
-  const type = document.getElementById('editType').value;
-  if (!title || isNaN(amount) || amount <= 0 || !date) { toast('Please fill all fields correctly', 'error'); return; }
-  const idx = transactions.findIndex(t => t.id === editingId);
-  if (idx > -1) {
-    transactions[idx] = { ...transactions[idx], title, amount, category, date, type };
-    save();
-    document.getElementById('editModal').style.display = 'none';
-    toast('Transaction updated ✓', 'success');
-    render();
-  }
-});
-
 function showAddModal() {
-  editingId = '_new_';
+  editingId = null;
   document.getElementById('editTitle').value = '';
   document.getElementById('editAmount').value = '';
   document.getElementById('editCategory').value = 'Food';
@@ -899,24 +1177,31 @@ function showAddModal() {
   document.getElementById('editModal').style.display = 'flex';
   document.querySelector('.modal-header h3').innerHTML = '<i class="fa-solid fa-plus-circle"></i> Add Transaction';
   document.getElementById('saveEditBtn').textContent = 'Add Transaction';
-
-  const origSave = document.getElementById('saveEditBtn').onclick;
-  document.getElementById('saveEditBtn').onclick = () => {
+  
+  const saveBtn = document.getElementById('saveEditBtn');
+  const newSaveBtn = saveBtn.cloneNode(true);
+  saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+  
+  newSaveBtn.addEventListener('click', function addHandler() {
     const title = document.getElementById('editTitle').value.trim();
     const amount = parseFloat(document.getElementById('editAmount').value);
     const category = document.getElementById('editCategory').value;
     const date = document.getElementById('editDate').value;
     const type = document.getElementById('editType').value;
-    if (!title || isNaN(amount) || amount <= 0 || !date) { toast('Please fill all fields correctly', 'error'); return; }
+    
+    if (!title || isNaN(amount) || amount <= 0 || !date) { 
+      toast('Please fill all fields correctly', 'error'); 
+      return; 
+    }
+    
     transactions.unshift({ id: uid(), title, amount, category, date, type });
     save();
     document.getElementById('editModal').style.display = 'none';
-    document.getElementById('saveEditBtn').onclick = null;
-    document.querySelector('.modal-header h3').innerHTML = '<i class="fa-solid fa-edit"></i> Edit Transaction';
-    document.getElementById('saveEditBtn').textContent = 'Save Changes';
     toast('Transaction added ✓', 'success');
+    checkBudgetAlerts();
     render();
-  };
+    newSaveBtn.removeEventListener('click', addHandler);
+  });
 }
 
 // ============================================================
@@ -964,6 +1249,7 @@ function setupQuickAdd() {
     transactions.unshift({ id: uid(), title, amount, category, date, type });
     save();
     toast(`${type === 'income' ? '💰' : '💸'} Transaction added!`, 'success');
+    checkBudgetAlerts();
     destroyCharts();
     renderDashboard();
   });
@@ -1023,7 +1309,10 @@ function renderAnalytics() {
     </div>
   `;
 
-  setTimeout(() => { buildBarChart(monthlyData); buildLineChart(monthlyData); }, 50);
+  setTimeout(() => { 
+    if (document.getElementById('chartBar')) buildBarChart(monthlyData); 
+    if (document.getElementById('chartLine')) buildLineChart(monthlyData); 
+  }, 50);
 }
 
 function buildMonthlyData() {
@@ -1039,8 +1328,9 @@ function buildMonthlyData() {
 }
 
 function buildBarChart(data) {
+  const ctx = document.getElementById('chartBar');
+  if (!ctx || !ctx.getContext) return;
   const cc = chartColors();
-  const ctx = document.getElementById('chartBar'); if (!ctx) return;
   activeCharts.bar = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -1062,8 +1352,9 @@ function buildBarChart(data) {
 }
 
 function buildLineChart(data) {
+  const ctx = document.getElementById('chartLine');
+  if (!ctx || !ctx.getContext) return;
   const cc = chartColors();
-  const ctx = document.getElementById('chartLine'); if (!ctx) return;
   let cum = 0;
   const cumBal = data.balance.map(v => (cum += v));
   activeCharts.line = new Chart(ctx, {
@@ -1135,8 +1426,9 @@ function renderBudgets() {
   `;
 
   setTimeout(() => {
+    const ctx = document.getElementById('chartBudget');
+    if (!ctx || !ctx.getContext) return;
     const cc = chartColors();
-    const ctx = document.getElementById('chartBudget'); if (!ctx) return;
     activeCharts.budget = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -1188,7 +1480,7 @@ function renderReports() {
         const bgs = ['rgba(37,99,235,0.12)','rgba(16,185,129,0.12)','rgba(245,158,11,0.12)','rgba(239,68,68,0.1)','rgba(139,92,246,0.12)','rgba(14,165,233,0.12)'];
         const colors = ['#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
         const descs = ['Complete month-by-month breakdown of all transactions','Year-to-date performance and projections','Expense categorization for tax purposes','Detailed breakdown of where money goes','Salary, freelance, and passive income summary','Build a report with custom date ranges and filters'];
-        return `<div class="report-card">
+        return `<div class="report-card" onclick="toast('${name} report generation started!', 'success')">
           <div class="report-icon" style="background:${bgs[i]};"><i class="${icons[i]}" style="color:${colors[i]};font-size:1.2rem;"></i></div>
           <div>
             <div class="report-title">${name}</div>
@@ -1212,7 +1504,7 @@ function renderReports() {
           <div style="font-weight:700;font-size:14px;color:var(--text);">Print Summary</div>
           <div style="font-size:12px;color:var(--text3);margin-top:4px;">Current month</div>
         </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;" onclick="toast('JSON export ready!','success')">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;" onclick="exportJSON()">
           <i class="fa-solid fa-code" style="font-size:2rem;color:#f59e0b;margin-bottom:10px;display:block;"></i>
           <div style="font-weight:700;font-size:14px;color:var(--text);">Export JSON</div>
           <div style="font-size:12px;color:var(--text3);margin-top:4px;">Raw data export</div>
@@ -1254,6 +1546,16 @@ function exportCSV() {
   a.download = 'aurum_transactions.csv';
   a.click();
   toast('CSV exported successfully!', 'success');
+}
+
+function exportJSON() {
+  const dataStr = JSON.stringify(transactions, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'aurum_transactions.json';
+  a.click();
+  toast('JSON exported successfully!', 'success');
 }
 
 function printSummary() {
@@ -1349,12 +1651,15 @@ function renderSettings() {
     currency = this.value;
     document.getElementById('currencySelect').value = currency;
     save(); toast('Currency updated', 'success');
+    destroyCharts();
+    render();
   });
 
   document.getElementById('resetDataBtn').addEventListener('click', () => {
     if (!confirm('Reset all transactions to sample data? This cannot be undone.')) return;
-    transactions = DEFAULT_TXNS.map(t=>({...t, id:uid()}));
+    transactions = DEFAULT_TXNS.map(t=>({...t, id: uid()}));
     save(); toast('Data reset to defaults', 'info');
+    checkBudgetAlerts();
     render();
   });
 }
@@ -1392,7 +1697,8 @@ document.getElementById('currencySelect').addEventListener('change', function() 
 // ============================================================
 document.getElementById('searchInput').addEventListener('input', function() {
   searchTerm = this.value.trim();
-  if (currentNav === 'dashboard' || currentNav === 'transactions') { destroyCharts(); render(); }
+  if (currentNav === 'transactions') { renderTransactions(); }
+  else if (currentNav === 'dashboard') { destroyCharts(); render(); }
 });
 
 // ============================================================
@@ -1405,6 +1711,7 @@ document.getElementById('datePill').textContent = new Date().toLocaleDateString(
 // ============================================================
 load();
 render();
+checkBudgetAlerts(); // Initial budget check
 </script>
 </body>
 </html>
