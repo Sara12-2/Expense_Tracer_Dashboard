@@ -99,7 +99,7 @@
 
 **Option 2: Clone Repository**
 ```bash
-git clone https://github.com/Sara12-2/Expense_Tracer_Dashboard.git
+git clonehttps://github.com/Sara12-2/Expense_Tracer_Dashboard
 cd Expense_Tracer_Dashboard
 open index.html
 ```
