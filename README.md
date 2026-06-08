@@ -10,7 +10,7 @@
 > **A premium, enterprise-grade personal finance dashboard** to track income, expenses, budgets, and financial insights in real-time.
 
 ## 🌐 Live Demo
-🔗 [View Live Dashboard](https://sara12-2.github.io/Expense_Tracer_Dashboard/)
+🔗https://expense-tracer-dashboard.vercel.app/
 
 ---
 
@@ -209,7 +209,6 @@ Expense_Tracer_Dashboard/
 - Added lazy loading for charts
 
 ---
-
 ### 📦 Version 1.0 (Legacy - January 2025)
 
 #### Core Features
